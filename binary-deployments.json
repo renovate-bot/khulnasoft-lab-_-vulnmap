@@ -1,0 +1,16 @@
+{
+    "darwin": {
+      "amd64": "vulnmap-macos",
+      "arm64": "vulnmap-macos-arm64"
+    },
+    "windows": {
+      "amd64": "vulnmap-win.exe"
+    },
+    "alpine": {
+      "amd64": "vulnmap-alpine"
+    },
+    "linux": {
+      "amd64": "vulnmap-linux",
+      "arm64": "vulnmap-linux-arm64"
+    }
+  }
