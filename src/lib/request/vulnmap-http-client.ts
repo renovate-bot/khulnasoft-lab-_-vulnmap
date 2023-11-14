@@ -1,10 +1,10 @@
 import * as needle from 'needle';
 import { OutgoingHttpHeaders } from 'http';
 import { NeedleHttpVerbs } from 'needle';
-import { makeRequest } from '../request/index';
+import { makeRequest } from './index';
 import { getAuthHeader } from '../api-token';
 import config from '../config';
-import { Payload } from '../request/types';
+import { Payload } from './types';
 
 interface RequestInfo {
   method: NeedleHttpVerbs;
