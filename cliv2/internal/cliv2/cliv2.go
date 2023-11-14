@@ -1,0 +1,434 @@
+/*
+Entry point class for the CLIv2 version.
+*/
+package cliv2
+
+import (
+	_ "embed"
+	"fmt"
+	"io"
+	"log"
+	"os"
+	"os/exec"
+	"path"
+	"regexp"
+	"strings"
+
+	"github.com/gofrs/flock"
+	"github.com/khulnasoft-lab/go-application-framework/pkg/configuration"
+	"github.com/khulnasoft-lab/go-application-framework/pkg/utils"
+
+	"github.com/khulnasoft-lab/vulnmap/cliv2/internal/constants"
+	"github.com/khulnasoft-lab/vulnmap/cliv2/internal/embedded"
+	"github.com/khulnasoft-lab/vulnmap/cliv2/internal/embedded/cliv1"
+	"github.com/khulnasoft-lab/vulnmap/cliv2/internal/proxy"
+	local_utils "github.com/khulnasoft-lab/vulnmap/cliv2/internal/utils"
+)
+
+type Handler int
+
+type CLI struct {
+	DebugLogger      *log.Logger
+	CacheDirectory   string
+	WorkingDirectory string
+	v1BinaryLocation string
+	stdin            io.Reader
+	stdout           io.Writer
+	stderr           io.Writer
+	env              []string
+	globalConfig     configuration.Configuration
+}
+
+type EnvironmentWarning struct {
+	message string
+}
+
+const (
+	V1_DEFAULT Handler = iota
+	V2_VERSION Handler = iota
+	V2_ABOUT   Handler = iota
+)
+
+func NewCLIv2(config configuration.Configuration, debugLogger *log.Logger) (*CLI, error) {
+
+	cacheDirectory := config.GetString(configuration.CACHE_PATH)
+
+	v1BinaryLocation, err := cliv1.GetFullCLIV1TargetPath(cacheDirectory)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	cli := CLI{
+		DebugLogger:      debugLogger,
+		CacheDirectory:   cacheDirectory,
+		WorkingDirectory: "",
+		v1BinaryLocation: v1BinaryLocation,
+		stdin:            os.Stdin,
+		stdout:           os.Stdout,
+		stderr:           os.Stderr,
+		env:              os.Environ(),
+		globalConfig:     config,
+	}
+
+	return &cli, nil
+}
+
+func (c *CLI) Init() (err error) {
+	c.DebugLogger.Println("Init start")
+
+	if len(c.CacheDirectory) > 0 {
+		// ensure the specified base cache directory exists, this needs to be done even before acquiring the lock
+		if _, err = os.Stat(c.CacheDirectory); os.IsNotExist(err) {
+			err = os.MkdirAll(c.CacheDirectory, local_utils.CACHEDIR_PERMISSION)
+			if err != nil {
+				return fmt.Errorf("Cache directory path is invalid: %w", err)
+			}
+		}
+	}
+
+	// use filelock to synchronize parallel executed processes
+	lockFileName := path.Join(c.CacheDirectory, GetFullVersion()+".lock")
+	fileLock := flock.New(lockFileName)
+	err = fileLock.Lock()
+	if err != nil {
+		return err
+	}
+
+	unlock := func() {
+		_ = fileLock.Unlock()
+		_ = os.Remove(lockFileName)
+	}
+	defer unlock()
+
+	c.DebugLogger.Printf("Init-Lock acquired: %v (%s)\n", fileLock.Locked(), lockFileName)
+
+	// create required cache and temp directories
+	err = local_utils.CreateAllDirectories(c.CacheDirectory, GetFullVersion())
+	if err != nil {
+		return err
+	}
+
+	// cleanup cache a bit
+	_ = c.ClearCache()
+
+	// extract cliv1
+	err = c.ExtractV1Binary()
+	if err != nil {
+		return err
+	}
+
+	c.DebugLogger.Println("Init end")
+
+	return err
+}
+
+func (c *CLI) ClearCache() error {
+	// Get files in directory
+	fileInfo, err := os.ReadDir(c.CacheDirectory)
+	if err != nil {
+		return err
+	}
+
+	// Get current version binary's path
+	v1BinaryPath := path.Dir(c.v1BinaryLocation)
+	var maxVersionToDelete = 5
+	var deleteCount = 0
+	for _, file := range fileInfo {
+		currentPath := path.Join(c.CacheDirectory, file.Name())
+		if currentPath != v1BinaryPath && !strings.Contains(currentPath, ".lock") {
+			deleteCount++
+			err = os.RemoveAll(currentPath)
+			if err != nil {
+				c.DebugLogger.Println("Error deleting an old version directory: ", currentPath)
+			}
+		}
+		// Stop the loop after 5 deletions to not create too much overhead
+		if deleteCount == maxVersionToDelete {
+			break
+		}
+	}
+
+	return nil
+}
+
+func (c *CLI) AppendEnvironmentVariables(env []string) {
+	c.env = append(c.env, env...)
+}
+
+func (c *CLI) ExtractV1Binary() error {
+	cliV1ExpectedSHA256 := cliv1.ExpectedSHA256()
+
+	isValid, err := embedded.ValidateFile(c.v1BinaryLocation, cliV1ExpectedSHA256, c.DebugLogger)
+	if err != nil || !isValid {
+		c.DebugLogger.Println("Extract cliv1 to", c.v1BinaryLocation)
+
+		err = cliv1.ExtractTo(c.v1BinaryLocation)
+		if err != nil {
+			return err
+		}
+
+		isValid, err := embedded.ValidateFile(c.v1BinaryLocation, cliV1ExpectedSHA256, c.DebugLogger)
+		if err != nil {
+			return err
+		}
+
+		if isValid {
+			c.DebugLogger.Println("Extracted cliv1 successfully")
+		} else {
+			c.DebugLogger.Println("Extracted cliv1 is not valid")
+			return fmt.Errorf("failed to extract legacy cli")
+		}
+	} else {
+		c.DebugLogger.Println("Extraction not required")
+	}
+
+	return nil
+}
+
+func GetFullVersion() string {
+	v1Version := cliv1.CLIV1Version()
+	return v1Version
+}
+
+func (c *CLI) GetIntegrationName() string {
+	return constants.VULNMAP_INTEGRATION_NAME
+}
+
+func (c *CLI) GetBinaryLocation() string {
+	return c.v1BinaryLocation
+}
+
+func (c *CLI) printVersion() {
+	fmt.Fprintln(c.stdout, GetFullVersion())
+}
+
+func (c *CLI) commandVersion(passthroughArgs []string) error {
+	if utils.Contains(passthroughArgs, "--json-file-output") {
+		return fmt.Errorf("The following option combination is not currently supported: version + json-file-output")
+	} else {
+		c.printVersion()
+		return nil
+	}
+}
+
+func (c *CLI) commandAbout(proxyInfo *proxy.ProxyInfo, passthroughArgs []string) error {
+
+	err := c.executeV1Default(proxyInfo, passthroughArgs)
+	if err != nil {
+		return err
+	}
+
+	const separator = "\n+-+-+-+-+-+-+\n\n\n"
+
+	allEmbeddedFiles := embedded.ListFiles()
+	for i := range allEmbeddedFiles {
+		f := &allEmbeddedFiles[i]
+		fPath := f.Path()
+
+		if strings.Contains(fPath, "licenses") {
+			size := f.Size()
+			data := make([]byte, size)
+			_, err := f.Read(data)
+			if err != nil {
+				continue
+			}
+
+			fmt.Printf("Package: %s \n", strings.ReplaceAll(strings.ReplaceAll(fPath, "/licenses/", ""), "/"+f.Name(), ""))
+			fmt.Fprintln(c.stdout, string(data))
+			fmt.Fprint(c.stdout, separator)
+		}
+	}
+
+	return nil
+}
+
+func determineHandler(passthroughArgs []string) Handler {
+	result := V1_DEFAULT
+
+	if utils.Contains(passthroughArgs, "--version") ||
+		utils.Contains(passthroughArgs, "-v") ||
+		utils.Contains(passthroughArgs, "version") {
+		result = V2_VERSION
+	} else if utils.Contains(passthroughArgs, "--about") ||
+		utils.Contains(passthroughArgs, "about") {
+		result = V2_ABOUT
+	}
+
+	return result
+}
+
+func PrepareV1EnvironmentVariables(
+	input []string,
+	integrationName string,
+	integrationVersion string,
+	proxyAddress string,
+	caCertificateLocation string,
+	orgid string,
+) (result []string, err error) {
+
+	inputAsMap := utils.ToKeyValueMap(input, "=")
+	result = input
+
+	_, integrationNameExists := inputAsMap[constants.VULNMAP_INTEGRATION_NAME_ENV]
+	_, integrationVersionExists := inputAsMap[constants.VULNMAP_INTEGRATION_VERSION_ENV]
+
+	if !integrationNameExists && !integrationVersionExists {
+		inputAsMap[constants.VULNMAP_INTEGRATION_NAME_ENV] = integrationName
+		inputAsMap[constants.VULNMAP_INTEGRATION_VERSION_ENV] = integrationVersion
+	} else if !(integrationNameExists && integrationVersionExists) {
+		err = EnvironmentWarning{message: fmt.Sprintf("Partially defined environment, please ensure to provide both %s and %s together!", constants.VULNMAP_INTEGRATION_NAME_ENV, constants.VULNMAP_INTEGRATION_VERSION_ENV)}
+	}
+
+	// preserve original proxy settings
+	inputAsMap[constants.VULNMAP_HTTPS_PROXY_ENV_SYSTEM], _ = utils.FindValueCaseInsensitive(inputAsMap, constants.VULNMAP_HTTPS_PROXY_ENV)
+	inputAsMap[constants.VULNMAP_HTTP_PROXY_ENV_SYSTEM], _ = utils.FindValueCaseInsensitive(inputAsMap, constants.VULNMAP_HTTP_PROXY_ENV)
+	inputAsMap[constants.VULNMAP_HTTP_NO_PROXY_ENV_SYSTEM], _ = utils.FindValueCaseInsensitive(inputAsMap, constants.VULNMAP_HTTP_NO_PROXY_ENV)
+
+	if err == nil {
+
+		// apply blacklist: ensure that no existing no_proxy or other configuration causes redirecting internal communication that is meant to stay between cliv1 and cliv2
+		blackList := []string{
+			constants.VULNMAP_HTTPS_PROXY_ENV,
+			constants.VULNMAP_HTTP_PROXY_ENV,
+			constants.VULNMAP_CA_CERTIFICATE_LOCATION_ENV,
+			constants.VULNMAP_HTTP_NO_PROXY_ENV,
+			constants.VULNMAP_NPM_NO_PROXY_ENV,
+			constants.VULNMAP_NPM_HTTPS_PROXY_ENV,
+			constants.VULNMAP_NPM_HTTP_PROXY_ENV,
+			constants.VULNMAP_NPM_PROXY_ENV,
+			constants.VULNMAP_NPM_ALL_PROXY,
+			constants.VULNMAP_OPENSSL_CONF,
+		}
+
+		for _, key := range blackList {
+			inputAsMap = utils.Remove(inputAsMap, key)
+		}
+
+		// fill expected values
+		inputAsMap[constants.VULNMAP_HTTPS_PROXY_ENV] = proxyAddress
+		inputAsMap[constants.VULNMAP_HTTP_PROXY_ENV] = proxyAddress
+		inputAsMap[constants.VULNMAP_CA_CERTIFICATE_LOCATION_ENV] = caCertificateLocation
+		inputAsMap[constants.VULNMAP_INTERNAL_ORGID_ENV] = orgid
+
+		// merge user defined (external) and internal no_proxy configuration
+		if len(inputAsMap[constants.VULNMAP_HTTP_NO_PROXY_ENV_SYSTEM]) > 0 {
+			internalNoProxy := strings.Split(constants.VULNMAP_INTERNAL_NO_PROXY, ",")
+			externalNoProxy := regexp.MustCompile("[,;]").Split(inputAsMap[constants.VULNMAP_HTTP_NO_PROXY_ENV_SYSTEM], -1)
+			mergedNoProxy := utils.Merge(internalNoProxy, externalNoProxy)
+			inputAsMap[constants.VULNMAP_HTTP_NO_PROXY_ENV] = strings.Join(mergedNoProxy, ",")
+		} else {
+			inputAsMap[constants.VULNMAP_HTTP_NO_PROXY_ENV] = constants.VULNMAP_INTERNAL_NO_PROXY
+		}
+
+		result = utils.ToSlice(inputAsMap, "=")
+	}
+
+	return result, err
+
+}
+
+func (c *CLI) PrepareV1Command(
+	cmd string,
+	args []string,
+	proxyInfo *proxy.ProxyInfo,
+	integrationName string,
+	integrationVersion string,
+) (vulnmapCmd *exec.Cmd, err error) {
+	proxyAddress := fmt.Sprintf("http://%s:%s@127.0.0.1:%d", proxy.PROXY_USERNAME, proxyInfo.Password, proxyInfo.Port)
+	orgid := c.globalConfig.GetString(configuration.ORGANIZATION)
+
+	vulnmapCmd = exec.Command(cmd, args...)
+	vulnmapCmd.Env, err = PrepareV1EnvironmentVariables(c.env, integrationName, integrationVersion, proxyAddress, proxyInfo.CertificateLocation, orgid)
+
+	if len(c.WorkingDirectory) > 0 {
+		vulnmapCmd.Dir = c.WorkingDirectory
+	}
+
+	return vulnmapCmd, err
+}
+
+func (c *CLI) executeV1Default(proxyInfo *proxy.ProxyInfo, passThroughArgs []string) error {
+
+	vulnmapCmd, err := c.PrepareV1Command(c.v1BinaryLocation, passThroughArgs, proxyInfo, c.GetIntegrationName(), GetFullVersion())
+
+	if c.DebugLogger.Writer() != io.Discard {
+		c.DebugLogger.Println("Launching: ")
+		c.DebugLogger.Println("  ", c.v1BinaryLocation)
+		c.DebugLogger.Println(" With Arguments:")
+		c.DebugLogger.Println("  ", strings.Join(passThroughArgs, ", "))
+		c.DebugLogger.Println(" With Environment: ")
+
+		variablesMap := utils.ToKeyValueMap(vulnmapCmd.Env, "=")
+		listedEnvironmentVariables := []string{
+			constants.VULNMAP_CA_CERTIFICATE_LOCATION_ENV,
+			constants.VULNMAP_HTTPS_PROXY_ENV,
+			constants.VULNMAP_HTTP_PROXY_ENV,
+			constants.VULNMAP_HTTP_NO_PROXY_ENV,
+			constants.VULNMAP_HTTPS_PROXY_ENV_SYSTEM,
+			constants.VULNMAP_HTTP_PROXY_ENV_SYSTEM,
+			constants.VULNMAP_HTTP_NO_PROXY_ENV_SYSTEM,
+			constants.VULNMAP_ANALYTICS_DISABLED_ENV,
+		}
+
+		for _, key := range listedEnvironmentVariables {
+			c.DebugLogger.Println("  ", key, "=", variablesMap[key])
+		}
+
+	}
+
+	vulnmapCmd.Stdin = c.stdin
+	vulnmapCmd.Stdout = c.stdout
+	vulnmapCmd.Stderr = c.stderr
+
+	if err != nil {
+		if evWarning, ok := err.(EnvironmentWarning); ok {
+			fmt.Fprintln(c.stdout, "WARNING! ", evWarning)
+		}
+	}
+
+	err = vulnmapCmd.Run()
+
+	return err
+}
+
+func (c *CLI) Execute(proxyInfo *proxy.ProxyInfo, passThroughArgs []string) error {
+	var err error
+	handler := determineHandler(passThroughArgs)
+
+	switch {
+	case handler == V2_VERSION:
+		err = c.commandVersion(passThroughArgs)
+	case handler == V2_ABOUT:
+		err = c.commandAbout(proxyInfo, passThroughArgs)
+	default:
+		err = c.executeV1Default(proxyInfo, passThroughArgs)
+	}
+
+	return err
+}
+
+func DeriveExitCode(err error) int {
+	returnCode := constants.VULNMAP_EXIT_CODE_OK
+
+	if err != nil {
+		if exitError, ok := err.(*exec.ExitError); ok {
+			returnCode = exitError.ExitCode()
+		} else {
+			// got an error but it's not an ExitError
+			returnCode = constants.VULNMAP_EXIT_CODE_ERROR
+		}
+	}
+
+	return returnCode
+}
+
+func (e EnvironmentWarning) Error() string {
+	return e.message
+}
+
+func (c *CLI) SetIoStreams(stdin io.Reader, stdout io.Writer, stderr io.Writer) {
+	c.stdin = stdin
+	c.stdout = stdout
+	c.stderr = stderr
+}
