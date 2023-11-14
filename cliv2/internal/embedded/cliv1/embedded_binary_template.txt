@@ -1,0 +1,21 @@
+//go:build application
+package cliv1
+
+import (
+	_ "embed"
+)
+
+//go:embed FILENAME
+var vulnmapCLIBytes []byte
+
+func getCLIv1Filename() string {
+	return "FILENAME"
+}
+
+//go:embed FILENAME.sha256
+var vulnmapCLISHA256 string
+
+func ExpectedSHA256() string {
+	sha256 := vulnmapCLISHA256[0:64]
+	return sha256
+}
