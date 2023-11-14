@@ -110,10 +110,10 @@ $(BINARY_RELEASES_FOLDER_TS_CLI)/vulnmap.tgz: prepack | $(BINARY_RELEASES_FOLDER
 	$(MAKE) $(BINARY_RELEASES_FOLDER_TS_CLI)/vulnmap.tgz.sha256
 
 $(BINARY_RELEASES_FOLDER_TS_CLI)/vulnmap-fix.tgz: prepack | $(BINARY_RELEASES_FOLDER_TS_CLI)
-	mv $(shell npm pack --workspace '@vulnmap/fix') $(BINARY_RELEASES_FOLDER_TS_CLI)/vulnmap-fix.tgz
+	mv $(shell npm pack --workspace '@khulnasoft/fix') $(BINARY_RELEASES_FOLDER_TS_CLI)/vulnmap-fix.tgz
 
 $(BINARY_RELEASES_FOLDER_TS_CLI)/vulnmap-protect.tgz: prepack | $(BINARY_RELEASES_FOLDER_TS_CLI)
-	mv $(shell npm pack --workspace '@vulnmap/protect') $(BINARY_RELEASES_FOLDER_TS_CLI)/vulnmap-protect.tgz
+	mv $(shell npm pack --workspace '@khulnasoft/protect') $(BINARY_RELEASES_FOLDER_TS_CLI)/vulnmap-protect.tgz
 
 $(BINARY_RELEASES_FOLDER_TS_CLI)/vulnmap-alpine: prepack | $(BINARY_RELEASES_FOLDER_TS_CLI)
 	$(PKG) -t node$(PKG_NODE_VERSION)-alpine-x64 -o $(BINARY_RELEASES_FOLDER_TS_CLI)/vulnmap-alpine
