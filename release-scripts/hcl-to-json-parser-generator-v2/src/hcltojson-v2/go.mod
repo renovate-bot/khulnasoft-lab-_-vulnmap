@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/gopherjs/gopherjs v1.17.2
-	github.com/khulnasoft-lab/vulnmap-iac-parsers v0.0.0-20231115010413-a21e0fbeb7f9
+	github.com/khulnasoft-lab/vulnmap-iac-parsers v0.0.1
 )
 
 require (
