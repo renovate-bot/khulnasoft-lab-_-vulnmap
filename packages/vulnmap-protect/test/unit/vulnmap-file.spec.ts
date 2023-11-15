@@ -13,7 +13,9 @@ patch:
     - lodash:
         patched: '2021-02-17T13:43:51.857Z'
 `;
-      const vulnmapFilePatchMetadata = extractPatchMetadata(dotVulnmapFileContents);
+      const vulnmapFilePatchMetadata = extractPatchMetadata(
+        dotVulnmapFileContents,
+      );
       expect(vulnmapFilePatchMetadata).toEqual([
         {
           vulnId: 'VULNMAP-JS-LODASH-567746',
@@ -33,7 +35,9 @@ patch:
     - 'lodash':
         patched: '2021-02-17T13:43:51.857Z'
 `;
-      const vulnmapFilePatchMetadata = extractPatchMetadata(dotVulnmapFileContents);
+      const vulnmapFilePatchMetadata = extractPatchMetadata(
+        dotVulnmapFileContents,
+      );
       expect(vulnmapFilePatchMetadata).toEqual([
         {
           vulnId: 'VULNMAP-JS-LODASH-567746',
@@ -53,7 +57,9 @@ patch:
     - "lodash":
         patched: '2021-02-17T13:43:51.857Z'
 `;
-      const vulnmapFilePatchMetadata = extractPatchMetadata(dotVulnmapFileContents);
+      const vulnmapFilePatchMetadata = extractPatchMetadata(
+        dotVulnmapFileContents,
+      );
       expect(vulnmapFilePatchMetadata).toEqual([
         {
           vulnId: 'VULNMAP-JS-LODASH-567746',
@@ -73,7 +79,9 @@ patch:
     - lodash:
         patched: '2021-02-17T13:43:51.857Z'
 `;
-      const vulnmapFilePatchMetadata = extractPatchMetadata(dotVulnmapFileContents);
+      const vulnmapFilePatchMetadata = extractPatchMetadata(
+        dotVulnmapFileContents,
+      );
       expect(vulnmapFilePatchMetadata).toEqual([
         {
           vulnId: 'VULNMAP-JS-LODASH-567746',
@@ -93,7 +101,9 @@ patch:
     - lodash:
         patched: '2021-02-17T13:43:51.857Z'
 `;
-      const vulnmapFilePatchMetadata = extractPatchMetadata(dotVulnmapFileContents);
+      const vulnmapFilePatchMetadata = extractPatchMetadata(
+        dotVulnmapFileContents,
+      );
       expect(vulnmapFilePatchMetadata).toEqual([
         {
           vulnId: 'VULNMAP-JS-LODASH-567746',
@@ -115,7 +125,9 @@ patch:
 `
         .split('\n')
         .join('\r\n');
-      const vulnmapFilePatchMetadata = extractPatchMetadata(dotVulnmapFileContents);
+      const vulnmapFilePatchMetadata = extractPatchMetadata(
+        dotVulnmapFileContents,
+      );
       expect(vulnmapFilePatchMetadata).toEqual([
         {
           vulnId: 'VULNMAP-JS-LODASH-567746',
@@ -137,7 +149,9 @@ patch:
     - 'tap > nyc > lodash':
         patched: '2021-02-17T13:43:51.857Z'
 `;
-      const vulnmapFilePatchMetadata = extractPatchMetadata(dotVulnmapFileContents);
+      const vulnmapFilePatchMetadata = extractPatchMetadata(
+        dotVulnmapFileContents,
+      );
       expect(vulnmapFilePatchMetadata).toEqual([
         {
           vulnId: 'VULNMAP-JS-LODASH-567746',
@@ -157,7 +171,9 @@ patch:
     - 'tap > nyc > lodash':
         patched: '2021-02-17T13:43:51.857Z'
 `;
-      const vulnmapFilePatchMetadata = extractPatchMetadata(dotVulnmapFileContents);
+      const vulnmapFilePatchMetadata = extractPatchMetadata(
+        dotVulnmapFileContents,
+      );
       expect(vulnmapFilePatchMetadata).toEqual([
         {
           vulnId: 'VULNMAP-JS-LODASH-567746',
@@ -177,7 +193,9 @@ patch:
     - "tap > nyc > lodash":
         patched: '2021-02-17T13:43:51.857Z'
 `;
-      const vulnmapFilePatchMetadata = extractPatchMetadata(dotVulnmapFileContents);
+      const vulnmapFilePatchMetadata = extractPatchMetadata(
+        dotVulnmapFileContents,
+      );
       expect(vulnmapFilePatchMetadata).toEqual([
         {
           vulnId: 'VULNMAP-JS-LODASH-567746',
@@ -202,7 +220,9 @@ patch:
     - top-level > some-other > the-module:
         patched: '2021-02-17T13:43:51.857Z'
 `;
-    const vulnmapFilePatchMetadata = extractPatchMetadata(dotVulnmapFileContents);
+    const vulnmapFilePatchMetadata = extractPatchMetadata(
+      dotVulnmapFileContents,
+    );
     expect(vulnmapFilePatchMetadata).toEqual([
       {
         vulnId: 'VULNMAP-JS-LODASH-567746',
@@ -223,7 +243,9 @@ ignore: {}
 # patches apply the minimum changes required to fix a vulnerability
 patch:
 `;
-    const vulnmapFilePatchMetadata = extractPatchMetadata(dotVulnmapFileContents);
+    const vulnmapFilePatchMetadata = extractPatchMetadata(
+      dotVulnmapFileContents,
+    );
     expect(vulnmapFilePatchMetadata).toHaveLength(0);
   });
 
@@ -233,7 +255,9 @@ patch:
 version: v1.19.0
 ignore: {}
 `;
-    const vulnmapFilePatchMetadata = extractPatchMetadata(dotVulnmapFileContents);
+    const vulnmapFilePatchMetadata = extractPatchMetadata(
+      dotVulnmapFileContents,
+    );
     expect(vulnmapFilePatchMetadata).toHaveLength(0);
   });
 

@@ -10,7 +10,10 @@ import * as vulnmap from '../../../lib';
 import { Options, TestOptions } from '../../../lib/types';
 import { MethodArgs } from '../../args';
 import { TestCommandResult } from '../../commands/types';
-import { LegacyVulnApiResult, TestResult } from '../../../lib/vulnmap-test/legacy';
+import {
+  LegacyVulnApiResult,
+  TestResult,
+} from '../../../lib/vulnmap-test/legacy';
 
 import {
   summariseErrorResults,

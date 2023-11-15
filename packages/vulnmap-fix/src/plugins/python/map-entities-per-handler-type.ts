@@ -1,6 +1,9 @@
 import * as debugLib from 'debug';
 
-import { EntityToFix, WithUserMessage } from '../../../cli/packages/vulnmap-fix/src/types';
+import {
+  EntityToFix,
+  WithUserMessage,
+} from '../../../cli/packages/vulnmap-fix/src/types';
 import { getHandlerType } from './get-handler-type';
 import { SUPPORTED_HANDLER_TYPES } from './supported-handler-types';
 

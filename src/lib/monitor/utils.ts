@@ -1,4 +1,7 @@
-import { ScannedProject, DepTree } from '@khulnasoft/cli-interface/legacy/common';
+import {
+  ScannedProject,
+  DepTree,
+} from '@khulnasoft/cli-interface/legacy/common';
 import {
   getContainerTargetFile,
   getContainerProjectName,

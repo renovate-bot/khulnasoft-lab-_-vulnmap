@@ -1,6 +1,9 @@
 import * as debugLib from 'debug';
 
-import { DependencyPins, FixChangesSummary } from '../../../../../../cli/packages/vulnmap-fix/src/types';
+import {
+  DependencyPins,
+  FixChangesSummary,
+} from '../../../../../../cli/packages/vulnmap-fix/src/types';
 import { generatePins } from './generate-pins';
 import { applyUpgrades } from './apply-upgrades';
 import { ParsedRequirements } from './requirements-file-parser';

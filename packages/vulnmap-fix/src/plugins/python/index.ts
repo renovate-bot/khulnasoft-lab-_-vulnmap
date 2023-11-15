@@ -3,7 +3,10 @@ import * as pMap from 'p-map';
 import * as ora from 'ora';
 import * as chalk from 'chalk';
 
-import { EntityToFix, FixOptions } from '../../../cli/packages/vulnmap-fix/src/types';
+import {
+  EntityToFix,
+  FixOptions,
+} from '../../../cli/packages/vulnmap-fix/src/types';
 import { FailedToFix, FixHandlerResultByPlugin } from '../types';
 import { loadHandler } from './load-handler';
 import { SUPPORTED_HANDLER_TYPES } from './supported-handler-types';

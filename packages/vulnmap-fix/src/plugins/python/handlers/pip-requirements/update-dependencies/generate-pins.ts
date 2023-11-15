@@ -1,4 +1,7 @@
-import { DependencyPins, FixChangesSummary } from '../../../../../../cli/packages/vulnmap-fix/src/types';
+import {
+  DependencyPins,
+  FixChangesSummary,
+} from '../../../../../../cli/packages/vulnmap-fix/src/types';
 import { calculateRelevantFixes } from './calculate-relevant-fixes';
 import { isDefined } from './is-defined';
 import { Requirement } from './requirements-file-parser';

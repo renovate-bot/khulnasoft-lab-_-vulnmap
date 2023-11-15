@@ -1,5 +1,8 @@
 import protect from '../../../../cli/packages/vulnmap-protect/src/lib';
-import { getVersion, getHelp } from '../../../../cli/packages/vulnmap-protect/src/lib';
+import {
+  getVersion,
+  getHelp,
+} from '../../../../cli/packages/vulnmap-protect/src/lib';
 import { createProject } from '../../../../cli/packages/vulnmap-protect/test/util/createProject';
 import { getPatchedLodash } from '../../../../cli/packages/vulnmap-protect/test/util/getPatchedLodash';
 import { runCommand } from '../../../../cli/packages/vulnmap-protect/test/util/runCommand';
@@ -111,7 +114,9 @@ describe('@khulnasoft/protect', () => {
       ).toBe(true);
       expect(
         fse.existsSync(
-          project.path(`node_modules/lodash/.vulnmap-VULNMAP-JS-LODASH-567746.flag`),
+          project.path(
+            `node_modules/lodash/.vulnmap-VULNMAP-JS-LODASH-567746.flag`,
+          ),
         ),
       ).toBe(true);
 

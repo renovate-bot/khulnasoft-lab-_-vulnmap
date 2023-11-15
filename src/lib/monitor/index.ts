@@ -34,7 +34,10 @@ import { dropEmptyDeps } from './drop-empty-deps';
 import { pruneTree } from './prune-dep-tree';
 import { findAndLoadPolicy } from '../policy';
 import { PluginMetadata } from '@khulnasoft/cli-interface/legacy/plugin';
-import { CallGraph, ScannedProject } from '@khulnasoft/cli-interface/legacy/common';
+import {
+  CallGraph,
+  ScannedProject,
+} from '@khulnasoft/cli-interface/legacy/common';
 import { isGitTarget } from '../project-metadata/types';
 import {
   getNameDepTree,

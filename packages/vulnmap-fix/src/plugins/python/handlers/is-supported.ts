@@ -1,4 +1,7 @@
-import { EntityToFix, WithUserMessage } from '../../../../cli/packages/vulnmap-fix/src/types';
+import {
+  EntityToFix,
+  WithUserMessage,
+} from '../../../../cli/packages/vulnmap-fix/src/types';
 
 interface Supported {
   supported: true;
