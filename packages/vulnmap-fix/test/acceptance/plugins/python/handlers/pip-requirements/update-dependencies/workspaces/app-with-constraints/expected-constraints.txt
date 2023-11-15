@@ -1,2 +1,2 @@
-Django==2.0.1
+Django==2.2.28
 transitive>=2.0.1 # not directly required, pinned by Vulnmap to avoid a vulnerability
