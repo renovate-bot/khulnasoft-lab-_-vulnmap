@@ -1,0 +1,18 @@
+$ vulnmap-protect --help
+
+NAME
+  @khulnasoft/protect - Patch vulnerable code in your project's dependencies.
+
+DESCRIPTION
+  You don't typically need to add the @khulnasoft/protect dependency manually.
+  For more information on how to setup and use @khulnasoft/protect, visit:
+    https://github.com/khulnasoft-lab/vulnmap/tree/master/packages/vulnmap-protect
+
+SYNOPSIS
+  vulnmap-protect [<options>]
+
+OPTIONS
+  --help
+    Display this help text.
+  --version
+    Display the current version.
