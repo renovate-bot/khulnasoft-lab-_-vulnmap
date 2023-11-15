@@ -1,4 +1,4 @@
-// This artifact was generated using GopherJS and https://github.com/vulnmap/vulnmap-iac-parsers
+// This artifact was generated using GopherJS and https://github.com/khulnasoft-lab/vulnmap-iac-parsers
 
 const gopherJsArtifact: HclToJsonArtifact = require('./parser');
 
