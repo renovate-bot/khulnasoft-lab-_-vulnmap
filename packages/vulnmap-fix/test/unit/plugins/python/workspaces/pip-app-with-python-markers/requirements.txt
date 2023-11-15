@@ -18,7 +18,7 @@ connexion[swagger-ui]==2.2.0
 constantly==15.1.0
 cryptography==2.6.1
 cssselect==1.0.3
-cython==0.29.7
+cython==0.29.36
 enum34==1.1.6 ; python_version < '2.6'
 fastavro==0.21.21
 flask-apscheduler==1.11.0
