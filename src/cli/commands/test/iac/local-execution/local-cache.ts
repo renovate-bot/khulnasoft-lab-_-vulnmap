@@ -144,7 +144,8 @@ export async function initLocalCache({
   // We extract the Vulnmap rules after the custom rules to ensure our files
   // always overwrite whatever might be there.
   try {
-    const BUNDLE_URL = 'https://static.vulnmap.khulnasoft.com/cli/wasm/bundle.tar.gz';
+    const BUNDLE_URL =
+      'https://static.vulnmap.khulnasoft.com/cli/wasm/bundle.tar.gz';
     const response = await streamRequest({
       method: 'get',
       url: BUNDLE_URL,

@@ -10,7 +10,10 @@ export function showFixTip(
   options: TestOptions & Options,
 ): string {
   const vulnmapFixSupported: SupportedProjectTypes[] = ['pip', 'poetry'];
-  if (!vulnmapFixSupported.includes(projectType) || !isLocalFolder(options.path)) {
+  if (
+    !vulnmapFixSupported.includes(projectType) ||
+    !isLocalFolder(options.path)
+  ) {
     return '';
   }
 

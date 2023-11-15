@@ -1,4 +1,8 @@
-import { DependencyPins, DependencyUpdates, TestResult } from '../../../cli/packages/vulnmap-fix/src/types';
+import {
+  DependencyPins,
+  DependencyUpdates,
+  TestResult,
+} from '../../../cli/packages/vulnmap-fix/src/types';
 
 export function hasFixableIssues(
   results: TestResult[],

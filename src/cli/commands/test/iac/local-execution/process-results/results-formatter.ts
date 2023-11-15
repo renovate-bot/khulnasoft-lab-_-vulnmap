@@ -7,7 +7,10 @@ import {
   PolicyMetadata,
   TestMeta,
 } from '../types';
-import { SEVERITY, SEVERITIES } from '../../../../../../lib/vulnmap-test/common';
+import {
+  SEVERITY,
+  SEVERITIES,
+} from '../../../../../../lib/vulnmap-test/common';
 import { IacProjectType } from '../../../../../../lib/iac/constants';
 import { CustomError } from '../../../../../../lib/errors';
 import { extractLineNumber, getFileTypeForParser } from './extract-line-number';

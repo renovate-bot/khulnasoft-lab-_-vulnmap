@@ -77,7 +77,9 @@ export function validateResultFromCustomRules(
         violatedPolicy.publicId
       }. Change to ${violatedPolicy.publicId.toUpperCase()}`;
     }
-    const invalidVulnmapPublicId = violatedPolicy.publicId.startsWith('VULNMAP-CC-');
+    const invalidVulnmapPublicId = violatedPolicy.publicId.startsWith(
+      'VULNMAP-CC-',
+    );
     if (invalidVulnmapPublicId) {
       failureReason = `Invalid publicId for custom rule ${violatedPolicy.publicId}. Change to a publicId that does not start with VULNMAP-CC-`;
     }

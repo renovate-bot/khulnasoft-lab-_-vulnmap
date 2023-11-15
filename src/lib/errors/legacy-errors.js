@@ -37,7 +37,8 @@ const errors = {
     'Bad policy file, please use --path=PATH to specify a ' +
     'directory with a .vulnmap file',
   idRequired: 'id is a required field for `vulnmap ignore`',
-  unknownCommand: '%s\n\nRun `vulnmap --help` for a list of available commands.',
+  unknownCommand:
+    '%s\n\nRun `vulnmap --help` for a list of available commands.',
   invalidSeverityThreshold:
     'Invalid severity threshold, please use one of ' +
     SEVERITIES.map((s) => s.verboseName).join(' | '),

@@ -1,7 +1,10 @@
 import * as debugLib from 'debug';
 import * as ora from 'ora';
 
-import { EntityToFix, FixOptions } from '../../../../../cli/packages/vulnmap-fix/src/types';
+import {
+  EntityToFix,
+  FixOptions,
+} from '../../../../../cli/packages/vulnmap-fix/src/types';
 import { checkPackageToolSupported } from '../../../package-tool-supported';
 import { PluginFixResponse } from '../../../types';
 import { updateDependencies } from './update-dependencies';

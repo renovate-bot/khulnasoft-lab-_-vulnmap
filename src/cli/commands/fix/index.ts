@@ -125,10 +125,12 @@ async function runVulnmapTestLegacy(
 
       const testResults: TestResult[] = [];
 
-      const testResultForPath: TestResult | TestResult[] = await vulnmap.test(
-        path,
-        { ...vulnmapTestOptions, quiet: true },
-      );
+      const testResultForPath:
+        | TestResult
+        | TestResult[] = await vulnmap.test(path, {
+        ...vulnmapTestOptions,
+        quiet: true,
+      });
       testResults.push(
         ...(Array.isArray(testResultForPath)
           ? testResultForPath

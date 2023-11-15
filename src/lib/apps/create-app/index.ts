@@ -67,9 +67,10 @@ export async function createAppDataInteractive(): Promise<ICreateAppRequest> {
     /\s+/g,
     '',
   ).split(',') as string[];
-  const vulnmapAppScopes = answers[VULNMAP_APP_SCOPES].replace(/\s+/g, '').split(
-    ',',
-  ) as string[];
+  const vulnmapAppScopes = answers[VULNMAP_APP_SCOPES].replace(
+    /\s+/g,
+    '',
+  ).split(',') as string[];
   const orgId = answers[VULNMAP_APP_ORG_ID].trim() as string;
   const context = answers[VULNMAP_APP_CONTEXT].trim() as AppContext;
   // POST: to create an app

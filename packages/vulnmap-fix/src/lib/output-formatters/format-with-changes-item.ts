@@ -1,6 +1,9 @@
 import * as chalk from 'chalk';
 
-import { EntityToFix, FixChangesSummary } from '../../../cli/packages/vulnmap-fix/src/types';
+import {
+  EntityToFix,
+  FixChangesSummary,
+} from '../../../cli/packages/vulnmap-fix/src/types';
 import { formatDisplayName } from './format-display-name';
 import { PADDING_SPACE } from './show-results-summary';
 

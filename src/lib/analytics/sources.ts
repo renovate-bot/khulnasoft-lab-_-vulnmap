@@ -105,7 +105,9 @@ export function isScoop(): boolean {
   }
 }
 
-export function validateScoopManifestFile(vulnmapExecutablePath: string): boolean {
+export function validateScoopManifestFile(
+  vulnmapExecutablePath: string,
+): boolean {
   // If this really is installed with scoop, there should be a `manifest.json` file adjacent to the running CLI executable (`vulnmap-win.exe`) which
   // we can look at for further validation that this really is from scoop.
   try {

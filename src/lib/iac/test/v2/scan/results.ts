@@ -27,7 +27,9 @@ export function mapVulnmapIacTestOutputToTestOutput(
     throw new FailedToGetIacOrgSettingsError();
   }
 
-  const errors = vulnmapIacOutput.errors?.map((err) => new VulnmapIacTestError(err));
+  const errors = vulnmapIacOutput.errors?.map(
+    (err) => new VulnmapIacTestError(err),
+  );
   const warnings = vulnmapIacOutput.warnings?.map(
     (err) => new VulnmapIacTestError(err),
   );
