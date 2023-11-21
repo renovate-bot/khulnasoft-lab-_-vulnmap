@@ -4,7 +4,7 @@ go 1.21.4
 
 require (
 	github.com/elazarl/goproxy v0.0.0-20231117061959-7cc037d33fb5
-	github.com/elazarl/goproxy/ext v0.0.0-20231031074852-3ec07828be7a
+	github.com/elazarl/goproxy/ext v0.0.0-20231117061959-7cc037d33fb5
 	github.com/gofrs/flock v0.8.1
 	github.com/google/uuid v1.4.0
 	github.com/khulnasoft-lab/cli-extension-dep-graph v0.0.0-20231114205514-03ff44aac77a
