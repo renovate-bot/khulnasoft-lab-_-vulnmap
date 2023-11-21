@@ -10,7 +10,7 @@ require (
 	github.com/khulnasoft-lab/cli-extension-dep-graph v0.0.0-20231114205514-03ff44aac77a
 	github.com/khulnasoft-lab/cli-extension-iac-rules v0.0.0-20231114211635-b3fa89cf2165
 	github.com/khulnasoft-lab/cli-extension-sbom v0.0.0-20231114201625-0fd5d26c8af0
-	github.com/khulnasoft-lab/container-cli v0.0.0-20231114162354-a96368147bfe
+	github.com/khulnasoft-lab/container-cli v0.0.0-20231116220108-ccd867f849ab
 	github.com/khulnasoft-lab/go-application-framework v0.0.0-20231114160628-a5f9fc7a9c25
 	github.com/khulnasoft-lab/go-httpauth v0.0.0-20231114154841-bf0f5fd18b56
 	github.com/khulnasoft-lab/vulnmap-iac-capture v0.0.0-20231114220027-5f91ae55115b
