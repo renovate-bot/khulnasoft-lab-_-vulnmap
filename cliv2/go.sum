@@ -548,6 +548,8 @@ github.com/khulnasoft-lab/cli-extension-sbom v0.0.0-20231114201625-0fd5d26c8af0 
 github.com/khulnasoft-lab/cli-extension-sbom v0.0.0-20231114201625-0fd5d26c8af0/go.mod h1:lU7JzKKjSReq0GJA6UmZALdSCbGOoz8djFPD9GLvBPo=
 github.com/khulnasoft-lab/container-cli v0.0.0-20231114162354-a96368147bfe h1:yV6q7KuAzRXhpvB5HU4Y/IyurVpg8GDQbDZvAtDMtQM=
 github.com/khulnasoft-lab/container-cli v0.0.0-20231114162354-a96368147bfe/go.mod h1:amrBS3qsbT5KGDcgOb6yiEGs600HUrqwtdBlMiIwSIs=
+github.com/khulnasoft-lab/container-cli v0.0.0-20231116220108-ccd867f849ab h1:0Fh6sXYumFR4iGhhxBB93Qifb76oIxNU4V6GdvzBARM=
+github.com/khulnasoft-lab/container-cli v0.0.0-20231116220108-ccd867f849ab/go.mod h1:amrBS3qsbT5KGDcgOb6yiEGs600HUrqwtdBlMiIwSIs=
 github.com/khulnasoft-lab/go-application-framework v0.0.0-20231114160628-a5f9fc7a9c25 h1:oe2JyG/XjjSpyiTY4Wrv4QL1K7Ng9v4YmwlIey/qQuw=
 github.com/khulnasoft-lab/go-application-framework v0.0.0-20231114160628-a5f9fc7a9c25/go.mod h1:ORXMoT8qlr2DmsRgUQZvdzfwPiHCpFEcbbSi51Ix0r8=
 github.com/khulnasoft-lab/go-httpauth v0.0.0-20231114154841-bf0f5fd18b56 h1:5hooIpQdixsGSiN9V+4WFCA991VAND/rE2cnNdPnIzc=
