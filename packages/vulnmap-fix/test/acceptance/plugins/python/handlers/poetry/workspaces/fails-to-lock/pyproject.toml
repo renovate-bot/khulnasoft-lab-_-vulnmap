@@ -7,7 +7,7 @@ authors = ["ghe <lili@khulnasoft.io>"]
 [tool.poetry.dependencies]
 python = "^2.7"
 Django = "1.11.0"
-Jinja2 = "2.11.3"
+Jinja2 = "3.1.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "*"
